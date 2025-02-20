@@ -55,16 +55,15 @@ vec_free(vec);
 
 ## Building
 ```bash
-mkdir build && cd build
-cmake ..
-cmake --build .
+cmake -S . -B build
+cmake --build build
 ```
 
 ### Building With Tests
 ```bash
-cmake -DBUILD_TESTING=ON ..
-cmake --build .
-ctest --output-on-failure
+cmake -S . -B build -DBUILD_TESTING=ON
+cmake --build build
+./bin/test_vec
 ```
 
 ## Error Handling
