@@ -1,0 +1,22 @@
+name: Unit Testing
+
+on:
+  push:
+    branches: [ "master" ]
+    tags: [ "v*" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure CMake with Tests
+      run: cmake -S . -B build -DBUILD_TESTING=ON
+
+    - name: Build Tests
+      run: cmake --build build
+
+    - name: Run Tests
+      run: ./bin/test_vec
