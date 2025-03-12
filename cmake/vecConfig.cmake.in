@@ -1,4 +1,5 @@
 @PACKAGE_INIT@
 
-include("${CMAKE_CURRENT_LIST_DIR}/@vec@Targets.cmake")
-check_required_components("@vec@")
+include("${CMAKE_CURRENT_LIST_DIR}/vecTargets.cmake")
+check_required_components(vec)
+set(vec_FOUND TRUE)
