@@ -5,6 +5,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * @brief Vector structure holding the array and its metadata
+ */
+typedef struct vec {
+    void* data;      /**< Pointer to the array data */
+    size_t size;     /**< Size of each element in bytes */
+    size_t count;    /**< Number of elements currently in the vector */
+    size_t capacity; /**< Total number of elements that can be stored */
+} vec_t;
+
 static inline ssize_t vec_resize(vec_t* vec, size_t new_capacity) {
     void* new_data = realloc(vec->data, new_capacity * vec->size);
     if (!new_data) {
@@ -15,6 +25,14 @@ static inline ssize_t vec_resize(vec_t* vec, size_t new_capacity) {
     vec->capacity = new_capacity;
     vec->data     = new_data;
     return 0;
+}
+
+size_t vec_capacity(const vec_t* vec) {
+    return vec->capacity;
+}
+
+size_t vec_count(const vec_t* vec) {
+    return vec->count;
 }
 
 void* vec_at(vec_t* vec, size_t index) {
@@ -85,8 +103,8 @@ void vec_free(vec_t* vec) {
     free(vec);
 }
 
-vec_t* vec_create(size_t capacity, size_t size) {
-    if (capacity == 0 || size == 0) {
+vec_t* vec_create(size_t size) {
+    if (size == 0) {
         errno = EINVAL;
         return NULL;
     }
@@ -97,7 +115,7 @@ vec_t* vec_create(size_t capacity, size_t size) {
         return NULL;
     }
 
-    vec->data = calloc(1, capacity * size);
+    vec->data = calloc(1, VEC_MIN_CAPACITY * size);
     if (vec->data == NULL) {
         free(vec);
         errno = ENOMEM;
@@ -105,7 +123,7 @@ vec_t* vec_create(size_t capacity, size_t size) {
     }
 
     vec->size     = size;
-    vec->capacity = capacity;
+    vec->capacity = VEC_MIN_CAPACITY;
     vec->count    = 0;
     return vec;
 }

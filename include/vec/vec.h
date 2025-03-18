@@ -19,32 +19,16 @@
 /**
  * @brief Vector structure holding the array and its metadata
  */
-typedef struct vec {
-    void* data;      /**< Pointer to the array data */
-    size_t size;     /**< Size of each element in bytes */
-    size_t count;    /**< Number of elements currently in the vector */
-    size_t capacity; /**< Total number of elements that can be stored */
-} vec_t;
+typedef struct vec vec_t;
+
+size_t vec_capacity(const vec_t* vec);
 
 /**
  * @brief Get the number of elements in the vector
  * @param vec Pointer to the vector
  * @return Current number of elements
  */
-static inline size_t vec_count(const vec_t* vec) {
-    return vec->count;
-}
-
-/**
- * @brief Get iterator to the beginning of the vector's data
- * @param vec Pointer to the vector
- * @return Pointer to first element of vector's data
- * @note Unsafe - does not check if vec is NULL or empty
- * @warning Direct access to internal data - use with caution
- */
-static inline void* vec_iter(const vec_t* vec) {
-    return vec->data;
-}
+size_t vec_count(const vec_t* vec);
 
 /**
  * @brief Access element at specified index
@@ -75,12 +59,11 @@ void* vec_push(vec_t* vec, const void* element);
 
 /**
  * @brief Create new vector with specified capacity and element size
- * @param capacity Initial number of elements that can be stored
  * @param size Size of each element in bytes
  * @return Pointer to new vector, NULL on failure
  * @note Sets errno to EINVAL if capacity or size is 0, ENOMEM if allocation fails
  */
-vec_t* vec_create(size_t capacity, size_t size);
+vec_t* vec_create(size_t size);
 
 /**
  * @brief Free vector and its data
