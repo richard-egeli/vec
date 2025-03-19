@@ -23,54 +23,52 @@ extern "C" {
 /**
  * @brief Internal implementation function to get the current capacity of a vector
  * @param vec Pointer to a pointer of the vector
- * @return Current capacity of the vector (maximum number of elements before resizing)
+ * @return Current capacity of the vector
  */
-size_t __vec_capacity_impl(const void** vec);
-#define vec_capacity(vec) __vec_capacity_impl((const void**)&vec)
+size_t __vec_capacity_impl(uintptr_t addr);
+#define vec_capacity(vec) __vec_capacity_impl((uintptr_t)vec)
 
 /**
  * @brief Get the number of elements in the vector
  * @param vec Pointer to the vector
  * @return Current number of elements
  */
-size_t __vec_count_impl(const void** vec);
-#define vec_count(vec) __vec_count_impl((const void**)&vec)
+size_t __vec_count_impl(uintptr_t addr);
+#define vec_count(vec) __vec_count_impl((uintptr_t)vec)
 
 /**
  * @brief Remove and optionally return the last element
- * @param vec Pointer to the vector
- * @param out Optional pointer to store popped element (can be NULL)
- * @return 0 on success, -1 on failure
- * @note Sets errno to EINVAL if vec is NULL, ENODATA if vector is empty
+ * @param addr address pointer to the vector
+ * @param out pointer to store popped element
+ * @return 0 on success, -errno on failure
  */
 ssize_t __vec_pop_impl(void** vec, void* out);
 #define vec_pop(vec, out) __vec_pop_impl((void**)&vec, (void*)out)
 
 /**
  * @brief Add element to end of vector
- * @param vec Pointer to the vector
- * @param element Pointer to element to add
- * @return Pointer to newly added element, NULL on failure
- * @note Sets errno to EINVAL if vec or element is NULL, ENOMEM if allocation fails
+ * @param addr address pointer to the vector
+ * @param element pointer to element to add
+ * @return pointer to newly added element, NULL on failure
+ * @return 0 on success, -errno on failure
  */
-ssize_t __vec_push_impl(void** vec, const void* element);
+ssize_t __vec_push_impl(void** addr, const void* element);
 #define vec_push(vec, element) __vec_push_impl((void**)&vec, (const void*)element)
 
 /**
  * @brief Create new vector with specified capacity and element size
  * @param size Size of each element in bytes
- * @return Pointer to new vector, NULL on failure
- * @note Sets errno to EINVAL if capacity or size is 0, ENOMEM if allocation fails
+ * @return 0 on success, -errno on failure
  */
 void* __vec_create_impl(size_t typesize);
 #define vec_create(typesize) __vec_create_impl(typesize)
 
 /**
  * @brief Free vector and its data
- * @param vec Pointer to vector to free
+ * @param addr address pointer to vector to free
  */
-void __vec_free_impl(void** vec);
-#define vec_free(vec) __vec_free_impl((void**)&vec)
+void __vec_free_impl(uintptr_t addr);
+#define vec_free(vec) __vec_free_impl((uintptr_t)vec)
 
 #ifdef __cplusplus
 }

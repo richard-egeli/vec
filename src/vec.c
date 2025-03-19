@@ -31,24 +31,17 @@ static inline ssize_t vec_resize(vec_t** vec, size_t new_capacity) {
     return 0;
 }
 
-size_t __vec_capacity_impl(const void** data) {
-    assert(*data != NULL);
-    assert(data != NULL);
-
-    const size_t offset    = offsetof(vec_t, data) - offsetof(vec_t, capacity);
-    const uint8_t* ptr     = (const uint8_t*)(*data);
-    const size_t* capacity = (const void*)(ptr - offset);
-    return *capacity;
+size_t __vec_capacity_impl(uintptr_t addr) {
+    assert((void*)addr != NULL);
+    const size_t offset = offsetof(vec_t, data) - offsetof(vec_t, capacity);
+    return *(size_t*)(addr - offset);
 }
 
-size_t __vec_count_impl(const void** data) {
-    assert(*data != NULL);
-    assert(data != NULL);
+size_t __vec_count_impl(uintptr_t addr) {
+    assert((void*)addr != NULL);
 
     const size_t offset = offsetof(vec_t, data) - offsetof(vec_t, count);
-    const uint8_t* ptr  = (const uint8_t*)(*data);
-    const size_t* count = (const void*)(ptr - offset);
-    return *count;
+    return *(size_t*)(addr - offset);
 }
 
 ssize_t __vec_pop_impl(void** data, void* out) {
@@ -103,10 +96,9 @@ ssize_t __vec_push_impl(void** data, const void* element) {
     return 0;
 }
 
-void __vec_free_impl(void** data) {
-    assert(*data != NULL);
-    assert(data != NULL);
-    free(((vec_t*)((uintptr_t)(*data) - offsetof(vec_t, data))));
+void __vec_free_impl(uintptr_t addr) {
+    assert((void*)addr != NULL);
+    free(((vec_t*)(addr - offsetof(vec_t, data))));
 }
 
 void* __vec_create_impl(size_t size) {
