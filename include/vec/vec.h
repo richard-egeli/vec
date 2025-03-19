@@ -16,28 +16,25 @@
 /** Minimum capacity for vector to prevent excessive resizing */
 #define VEC_MIN_CAPACITY 16
 
-/**
- * @brief Vector structure holding the array and its metadata
- */
-typedef struct vec vec_t;
-
-size_t vec_capacity(const vec_t* vec);
+size_t __vec_capacity_impl(const void** vec);
+#define vec_capacity(vec) __vec_capacity_impl((void*)&vec)
 
 /**
  * @brief Get the number of elements in the vector
  * @param vec Pointer to the vector
  * @return Current number of elements
  */
-size_t vec_count(const vec_t* vec);
+size_t __vec_count_impl(const void** vec);
+#define vec_count(vec) __vec_count_impl((void*)&vec)
 
-/**
- * @brief Access element at specified index
- * @param vec Pointer to the vector
- * @param index Index of element to access
- * @return Pointer to element if found, NULL if index out of bounds or vec is NULL
- * @note Sets errno to EINVAL if vec is NULL, ERANGE if index out of bounds
- */
-void* vec_at(vec_t* vec, size_t index);
+// /**
+//  * @brief Access element at specified index
+//  * @param vec Pointer to the vector
+//  * @param index Index of element to access
+//  * @return Pointer to element if found, NULL if index out of bounds or vec is NULL
+//  * @note Sets errno to EINVAL if vec is NULL, ERANGE if index out of bounds
+//  */
+// void* vec_at(void* vec, size_t index);
 
 /**
  * @brief Remove and optionally return the last element
@@ -46,7 +43,8 @@ void* vec_at(vec_t* vec, size_t index);
  * @return 0 on success, -1 on failure
  * @note Sets errno to EINVAL if vec is NULL, ENODATA if vector is empty
  */
-ssize_t vec_pop(vec_t* vec, void* out);
+ssize_t __vec_pop_impl(void** vec, void* out);
+#define vec_pop(vec, out) __vec_pop_impl((void**)&vec, (void*)out)
 
 /**
  * @brief Add element to end of vector
@@ -55,7 +53,8 @@ ssize_t vec_pop(vec_t* vec, void* out);
  * @return Pointer to newly added element, NULL on failure
  * @note Sets errno to EINVAL if vec or element is NULL, ENOMEM if allocation fails
  */
-void* vec_push(vec_t* vec, const void* element);
+ssize_t __vec_push_impl(void** vec, const void* element);
+#define vec_push(vec, element) __vec_push_impl((void**)&vec, (void*)element)
 
 /**
  * @brief Create new vector with specified capacity and element size
@@ -63,12 +62,14 @@ void* vec_push(vec_t* vec, const void* element);
  * @return Pointer to new vector, NULL on failure
  * @note Sets errno to EINVAL if capacity or size is 0, ENOMEM if allocation fails
  */
-vec_t* vec_create(size_t size);
+void* __vec_create_impl(size_t typesize);
+#define vec_create(type) __vec_create_impl(sizeof(type))
 
 /**
  * @brief Free vector and its data
  * @param vec Pointer to vector to free
  */
-void vec_free(vec_t* vec);
+void __vec_free_impl(void** vec);
+#define vec_free(vec) __vec_free_impl((void**)&vec)
 
 #endif  // VEC_VEC_H_

@@ -14,44 +14,36 @@ void tearDown(void) {
 
 static void test_vec_create(void) {
     // Test normal creation
-    vec_t* vec = vec_create(sizeof(int));
+    int* vec = vec_create(int);
     TEST_ASSERT_NOT_NULL(vec);
     vec_free(vec);
 }
 
 static void test_vec_push(void) {
-    vec_t* vec = vec_create(sizeof(int));
+    int* arr = vec_create(int);
 
     // Test basic push
-    int value    = 42;
-    void* result = vec_push(vec, &value);
-    TEST_ASSERT_NOT_NULL(result);
-    TEST_ASSERT_EQUAL_INT(42, *(int*)result);
-    TEST_ASSERT_EQUAL_size_t(1, vec_count(vec));
+    int value = 42;
+    TEST_ASSERT_EQUAL(0, vec_push(arr, &value));
+    TEST_ASSERT_EQUAL_INT(42, arr[0]);
+    TEST_ASSERT_EQUAL_size_t(1, vec_count(arr));
 
     // Test push causing resize
     for (int i = 0; i < VEC_MIN_CAPACITY; i++) {
-        result = vec_push(vec, &i);
-        TEST_ASSERT_NOT_NULL(result);
+        TEST_ASSERT_EQUAL_INT(0, vec_push(arr, &i));
     }
-    TEST_ASSERT_EQUAL_size_t(VEC_MIN_CAPACITY * 2, vec_capacity(vec));
 
-    // Test null checks
-    TEST_ASSERT_NULL(vec_push(NULL, &value));
-    TEST_ASSERT_EQUAL_INT(EINVAL, errno);
-    TEST_ASSERT_NULL(vec_push(vec, NULL));
-    TEST_ASSERT_EQUAL_INT(EINVAL, errno);
+    TEST_ASSERT_EQUAL_size_t(VEC_MIN_CAPACITY * 2, vec_capacity(arr));
 
-    vec_free(vec);
+    vec_free(arr);
 }
 
 static void test_vec_pop(void) {
-    vec_t* vec = vec_create(sizeof(int));
+    int* vec = vec_create(int);
 
     // Test pop from empty vector
     int out;
-    TEST_ASSERT_EQUAL_INT(-1, vec_pop(vec, &out));
-    TEST_ASSERT_EQUAL_INT(ENODATA, errno);
+    TEST_ASSERT_EQUAL_INT(-ENODATA, vec_pop(vec, &out));
 
     // Test pop after push
     int value = 42;
@@ -59,10 +51,6 @@ static void test_vec_pop(void) {
     TEST_ASSERT_EQUAL_INT(0, vec_pop(vec, &out));
     TEST_ASSERT_EQUAL_INT(42, out);
     TEST_ASSERT_EQUAL_size_t(0, vec_count(vec));
-
-    // Test null checks
-    TEST_ASSERT_EQUAL_INT(-1, vec_pop(NULL, &out));
-    TEST_ASSERT_EQUAL_INT(EINVAL, errno);
 
     // Test pop without out parameter
     vec_push(vec, &value);
@@ -72,44 +60,23 @@ static void test_vec_pop(void) {
     vec_free(vec);
 }
 
-static void test_vec_at(void) {
-    vec_t* vec = vec_create(sizeof(int));
-
-    // Test out of bounds
-    TEST_ASSERT_NULL(vec_at(vec, 0));
-    TEST_ASSERT_EQUAL_INT(ERANGE, errno);
-
-    // Test valid access
-    int value = 42;
-    vec_push(vec, &value);
-    void* result = vec_at(vec, 0);
-    TEST_ASSERT_NOT_NULL(result);
-    TEST_ASSERT_EQUAL_INT(42, *(int*)result);
-
-    // Test null checks
-    TEST_ASSERT_NULL(vec_at(NULL, 0));
-    TEST_ASSERT_EQUAL_INT(EINVAL, errno);
-
-    vec_free(vec);
-}
-
 static void test_vec_resize(void) {
-    vec_t* vec = vec_create(sizeof(int));
+    int* arr = vec_create(int);
 
     // Fill vector to trigger resize
     for (int i = 0; i < VEC_MIN_CAPACITY + 1; i++) {
-        vec_push(vec, &i);
+        vec_push(arr, &i);
     }
-    TEST_ASSERT_EQUAL_size_t(VEC_MIN_CAPACITY * 2, vec_capacity(vec));
+    TEST_ASSERT_EQUAL_size_t(VEC_MIN_CAPACITY * 2, vec_capacity(arr));
 
     // Pop items to trigger shrink
     int out;
-    while (vec_count(vec) > VEC_MIN_CAPACITY / 4) {
-        vec_pop(vec, &out);
+    while (vec_count(arr) > VEC_MIN_CAPACITY / 4) {
+        vec_pop(arr, &out);
     }
-    TEST_ASSERT_EQUAL_size_t(VEC_MIN_CAPACITY, vec_capacity(vec));
+    TEST_ASSERT_EQUAL_size_t(VEC_MIN_CAPACITY, vec_capacity(arr));
 
-    vec_free(vec);
+    vec_free(arr);
 }
 
 int main(void) {
@@ -117,7 +84,6 @@ int main(void) {
     RUN_TEST(test_vec_create);
     RUN_TEST(test_vec_push);
     RUN_TEST(test_vec_pop);
-    RUN_TEST(test_vec_at);
     RUN_TEST(test_vec_resize);
     return UNITY_END();
 }
