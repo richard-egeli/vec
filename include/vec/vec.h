@@ -10,14 +10,23 @@
 #ifndef VEC_VEC_H_
 #define VEC_VEC_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <sys/types.h>
 
 /** Minimum capacity for vector to prevent excessive resizing */
 #define VEC_MIN_CAPACITY 16
 
+/**
+ * @brief Internal implementation function to get the current capacity of a vector
+ * @param vec Pointer to a pointer of the vector
+ * @return Current capacity of the vector (maximum number of elements before resizing)
+ */
 size_t __vec_capacity_impl(const void** vec);
-#define vec_capacity(vec) __vec_capacity_impl((const void*)&vec)
+#define vec_capacity(vec) __vec_capacity_impl((const void**)&vec)
 
 /**
  * @brief Get the number of elements in the vector
@@ -25,16 +34,7 @@ size_t __vec_capacity_impl(const void** vec);
  * @return Current number of elements
  */
 size_t __vec_count_impl(const void** vec);
-#define vec_count(vec) __vec_count_impl((const void*)&vec)
-
-// /**
-//  * @brief Access element at specified index
-//  * @param vec Pointer to the vector
-//  * @param index Index of element to access
-//  * @return Pointer to element if found, NULL if index out of bounds or vec is NULL
-//  * @note Sets errno to EINVAL if vec is NULL, ERANGE if index out of bounds
-//  */
-// void* vec_at(void* vec, size_t index);
+#define vec_count(vec) __vec_count_impl((const void**)&vec)
 
 /**
  * @brief Remove and optionally return the last element
@@ -54,7 +54,7 @@ ssize_t __vec_pop_impl(void** vec, void* out);
  * @note Sets errno to EINVAL if vec or element is NULL, ENOMEM if allocation fails
  */
 ssize_t __vec_push_impl(void** vec, const void* element);
-#define vec_push(vec, element) __vec_push_impl((void**)&vec, (void*)element)
+#define vec_push(vec, element) __vec_push_impl((void**)&vec, (const void*)element)
 
 /**
  * @brief Create new vector with specified capacity and element size
@@ -71,5 +71,9 @@ void* __vec_create_impl(size_t typesize);
  */
 void __vec_free_impl(void** vec);
 #define vec_free(vec) __vec_free_impl((void**)&vec)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // VEC_VEC_H_

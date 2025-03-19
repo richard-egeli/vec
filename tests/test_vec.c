@@ -52,11 +52,6 @@ static void test_vec_pop(void) {
     TEST_ASSERT_EQUAL_INT(42, out);
     TEST_ASSERT_EQUAL_size_t(0, vec_count(vec));
 
-    // Test pop without out parameter
-    vec_push(vec, &value);
-    TEST_ASSERT_EQUAL_INT(0, vec_pop(vec, NULL));
-    TEST_ASSERT_EQUAL_size_t(0, vec_count(vec));
-
     vec_free(vec);
 }
 

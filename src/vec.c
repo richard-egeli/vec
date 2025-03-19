@@ -32,6 +32,7 @@ static inline ssize_t vec_resize(vec_t** vec, size_t new_capacity) {
 }
 
 size_t __vec_capacity_impl(const void** data) {
+    assert(*data != NULL);
     assert(data != NULL);
 
     const size_t offset    = offsetof(vec_t, data) - offsetof(vec_t, capacity);
@@ -41,6 +42,7 @@ size_t __vec_capacity_impl(const void** data) {
 }
 
 size_t __vec_count_impl(const void** data) {
+    assert(*data != NULL);
     assert(data != NULL);
 
     const size_t offset = offsetof(vec_t, data) - offsetof(vec_t, count);
@@ -49,25 +51,10 @@ size_t __vec_count_impl(const void** data) {
     return *count;
 }
 
-void* vec_at(vec_t* vec, size_t index) {
-    if (vec == NULL) {
-        errno = EINVAL;
-        return NULL;
-    }
-
-    if (index >= vec->count) {
-        errno = ERANGE;
-        return NULL;
-    }
-
-    const size_t offset = index * vec->size;
-    return (uint8_t*)vec->data + offset;
-}
-
 ssize_t __vec_pop_impl(void** data, void* out) {
-    if (data == NULL) {
-        return -EINVAL;
-    }
+    assert(*data != NULL);
+    assert(data != NULL);
+    assert(out != NULL);
 
     vec_t* vec = ((vec_t*)((uintptr_t)(*data) - offsetof(vec_t, data)));
     if (vec->count == 0) {
@@ -95,9 +82,9 @@ ssize_t __vec_pop_impl(void** data, void* out) {
 }
 
 ssize_t __vec_push_impl(void** data, const void* element) {
-    if (data == NULL || element == NULL) {
-        return -EINVAL;
-    }
+    assert(element != NULL);
+    assert(*data != NULL);
+    assert(data != NULL);
 
     vec_t* vec = ((vec_t*)((uintptr_t)(*data) - offsetof(vec_t, data)));
     if (vec->count >= vec->capacity) {
@@ -117,14 +104,13 @@ ssize_t __vec_push_impl(void** data, const void* element) {
 }
 
 void __vec_free_impl(void** data) {
+    assert(*data != NULL);
+    assert(data != NULL);
     free(((vec_t*)((uintptr_t)(*data) - offsetof(vec_t, data))));
 }
 
 void* __vec_create_impl(size_t size) {
-    if (size == 0) {
-        errno = EINVAL;
-        return NULL;
-    }
+    assert(size > 0);
 
     vec_t* vec = malloc(sizeof(*vec) + VEC_MIN_CAPACITY * size);
     if (vec == NULL) {
