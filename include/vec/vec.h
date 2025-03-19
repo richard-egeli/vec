@@ -63,7 +63,7 @@ ssize_t __vec_push_impl(void** vec, const void* element);
  * @note Sets errno to EINVAL if capacity or size is 0, ENOMEM if allocation fails
  */
 void* __vec_create_impl(size_t typesize);
-#define vec_create(type) __vec_create_impl(sizeof(type))
+#define vec_create(typesize) __vec_create_impl(typesize)
 
 /**
  * @brief Free vector and its data

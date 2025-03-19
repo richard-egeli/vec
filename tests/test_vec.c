@@ -14,13 +14,13 @@ void tearDown(void) {
 
 static void test_vec_create(void) {
     // Test normal creation
-    int* vec = vec_create(int);
+    int* vec = vec_create(sizeof(int));
     TEST_ASSERT_NOT_NULL(vec);
     vec_free(vec);
 }
 
 static void test_vec_push(void) {
-    int* arr = vec_create(int);
+    int* arr = vec_create(sizeof(int));
 
     // Test basic push
     int value = 42;
@@ -39,7 +39,7 @@ static void test_vec_push(void) {
 }
 
 static void test_vec_pop(void) {
-    int* vec = vec_create(int);
+    int* vec = vec_create(sizeof(int));
 
     // Test pop from empty vector
     int out;
@@ -61,7 +61,7 @@ static void test_vec_pop(void) {
 }
 
 static void test_vec_resize(void) {
-    int* arr = vec_create(int);
+    int* arr = vec_create(sizeof(int));
 
     // Fill vector to trigger resize
     for (int i = 0; i < VEC_MIN_CAPACITY + 1; i++) {
