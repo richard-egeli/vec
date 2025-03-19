@@ -17,7 +17,7 @@
 #define VEC_MIN_CAPACITY 16
 
 size_t __vec_capacity_impl(const void** vec);
-#define vec_capacity(vec) __vec_capacity_impl((void*)&vec)
+#define vec_capacity(vec) __vec_capacity_impl((const void*)&vec)
 
 /**
  * @brief Get the number of elements in the vector
@@ -25,7 +25,7 @@ size_t __vec_capacity_impl(const void** vec);
  * @return Current number of elements
  */
 size_t __vec_count_impl(const void** vec);
-#define vec_count(vec) __vec_count_impl((void*)&vec)
+#define vec_count(vec) __vec_count_impl((const void*)&vec)
 
 // /**
 //  * @brief Access element at specified index
