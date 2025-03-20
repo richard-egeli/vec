@@ -37,7 +37,7 @@ size_t __vec_capacity_impl(uintptr_t addr) {
     return *(size_t*)(addr - offset);
 }
 
-size_t __vec_count_impl(uintptr_t addr) {
+size_t __vec_length_impl(uintptr_t addr) {
     assert((void*)addr != NULL);
 
     const size_t offset = offsetof(vec_t, data) - offsetof(vec_t, count);

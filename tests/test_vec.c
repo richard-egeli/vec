@@ -26,7 +26,7 @@ static void test_vec_push(void) {
     int value = 42;
     TEST_ASSERT_EQUAL(0, vec_push(arr, &value));
     TEST_ASSERT_EQUAL_INT(42, arr[0]);
-    TEST_ASSERT_EQUAL_size_t(1, vec_count(arr));
+    TEST_ASSERT_EQUAL_size_t(1, vec_length(arr));
 
     // Test push causing resize
     for (int i = 0; i < VEC_MIN_CAPACITY; i++) {
@@ -50,7 +50,7 @@ static void test_vec_pop(void) {
     vec_push(vec, &value);
     TEST_ASSERT_EQUAL_INT(0, vec_pop(vec, &out));
     TEST_ASSERT_EQUAL_INT(42, out);
-    TEST_ASSERT_EQUAL_size_t(0, vec_count(vec));
+    TEST_ASSERT_EQUAL_size_t(0, vec_length(vec));
 
     vec_free(vec);
 }
@@ -66,7 +66,7 @@ static void test_vec_resize(void) {
 
     // Pop items to trigger shrink
     int out;
-    while (vec_count(arr) > VEC_MIN_CAPACITY / 4) {
+    while (vec_length(arr) > VEC_MIN_CAPACITY / 4) {
         vec_pop(arr, &out);
     }
     TEST_ASSERT_EQUAL_size_t(VEC_MIN_CAPACITY, vec_capacity(arr));

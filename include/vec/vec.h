@@ -33,8 +33,8 @@ size_t __vec_capacity_impl(uintptr_t addr);
  * @param vec Pointer to the vector
  * @return Current number of elements
  */
-size_t __vec_count_impl(uintptr_t addr);
-#define vec_count(vec) __vec_count_impl((uintptr_t)vec)
+size_t __vec_length_impl(uintptr_t addr);
+#define vec_length(vec) __vec_length_impl((uintptr_t)vec)
 
 /**
  * @brief Remove and optionally return the last element
