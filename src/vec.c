@@ -1,6 +1,5 @@
 #include "vec.h"
 
-#include <assert.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -32,22 +31,19 @@ static inline ssize_t vec_resize(vec_t** vec, size_t new_capacity) {
 }
 
 size_t __vec_capacity_impl(uintptr_t addr) {
-    assert((void*)addr != NULL);
     const size_t offset = offsetof(vec_t, data) - offsetof(vec_t, capacity);
-    return *(size_t*)(addr - offset);
+    return (void*)addr != NULL ? *(size_t*)(addr - offset) : 0;
 }
 
 size_t __vec_length_impl(uintptr_t addr) {
-    assert((void*)addr != NULL);
-
     const size_t offset = offsetof(vec_t, data) - offsetof(vec_t, count);
-    return *(size_t*)(addr - offset);
+    return (void*)addr != NULL ? *(size_t*)(addr - offset) : 0;
 }
 
 ssize_t __vec_pop_impl(void** data, void* out) {
-    assert(*data != NULL);
-    assert(data != NULL);
-    assert(out != NULL);
+    if (data == NULL || out == NULL) {
+        return -EINVAL;
+    }
 
     vec_t* vec = ((vec_t*)((uintptr_t)(*data) - offsetof(vec_t, data)));
     if (vec->count == 0) {
@@ -75,9 +71,9 @@ ssize_t __vec_pop_impl(void** data, void* out) {
 }
 
 ssize_t __vec_push_impl(void** data, const void* element) {
-    assert(element != NULL);
-    assert(*data != NULL);
-    assert(data != NULL);
+    if (data == NULL || element == NULL) {
+        return -EINVAL;
+    }
 
     vec_t* vec = ((vec_t*)((uintptr_t)(*data) - offsetof(vec_t, data)));
     if (vec->count >= vec->capacity) {
@@ -97,12 +93,15 @@ ssize_t __vec_push_impl(void** data, const void* element) {
 }
 
 void __vec_free_impl(uintptr_t addr) {
-    assert((void*)addr != NULL);
-    free(((vec_t*)(addr - offsetof(vec_t, data))));
+    if ((void*)addr != NULL) {
+        free(((vec_t*)(addr - offsetof(vec_t, data))));
+    }
 }
 
 void* __vec_create_impl(size_t size) {
-    assert(size > 0);
+    if (size == 0) {
+        return NULL;
+    }
 
     vec_t* vec = malloc(sizeof(*vec) + VEC_MIN_CAPACITY * size);
     if (vec == NULL) {
